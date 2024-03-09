@@ -1,7 +1,7 @@
 import type TSNode from "ts-node";
 import type { REGISTER_INSTANCE } from "ts-node";
 import ts from "typescript";
-import transformer from "./transformer";
+import { transformer } from "./transformer";
 
 /* ****************************************************************************************************************** */
 // region: Helpers

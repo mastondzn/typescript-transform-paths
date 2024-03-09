@@ -75,7 +75,7 @@ function getTsProperties(args: Parameters<typeof transformer>) {
 // region: Transformer
 /* ****************************************************************************************************************** */
 
-export default function transformer(
+export function transformer(
   program?: ts.Program,
   pluginConfig?: TsTransformPathsConfig,
   transformerExtras?: TransformerExtras,

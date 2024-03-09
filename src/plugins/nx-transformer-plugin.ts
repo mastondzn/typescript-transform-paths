@@ -1,5 +1,5 @@
 import { NxTransformerPlugin } from "../../types";
-import transformer from "../transformer";
+import { transformer } from "../transformer";
 import ts from "typescript";
 
 /* ****************************************************************************************************************** *

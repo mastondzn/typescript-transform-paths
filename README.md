@@ -1,4 +1,6 @@
-# typescript-transform-paths
+# @mastondzn/typescript-transform-paths
+
+Fork of [typescript-transform-paths](https://github.com/LeDDGroup/typescript-transform-paths) with some small export changes, and now uses rollup for compiling. I don't recommend you use this package, use the original instead. It may be very broken with your usage.
 
 [![npm version](https://img.shields.io/npm/v/typescript-transform-paths.svg)](https://www.npmjs.com/package/typescript-transform-paths)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FLeDDGroup%2Ftypescript-transform-paths%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/LeDDGroup/typescript-transform-paths/goto?ref=master)
@@ -41,9 +43,11 @@ Add it to _plugins_ in your _tsconfig.json_
   }
 }
 ```
+
 #### Example result
 
 `core/index.ts`
+
 ```tsx
 // The following transforms path to '../utils/sum'
 import { sum } from "@utils/sum";
@@ -53,10 +57,10 @@ import { sum } from "@utils/sum";
 
 - **Compile with `tsc`** — Use [ts-patch](https://github.com/nonara/ts-patch)
 
+- **Use with ts-node** — Add `typescript-transform-paths/register` to `require` config.
 
-- **Use with ts-node** — Add `typescript-transform-paths/register` to `require` config.  
-   
-    `tsconfig.json`
+  `tsconfig.json`
+
   ```jsonc
   {
     "ts-node": {
@@ -72,6 +76,7 @@ import { sum } from "@utils/sum";
 - **Use with NX** — Add the `typescript-transform-paths/nx-transformer` to project config
 
   `project.json`
+
   ```jsonc
   {
     /* ... */
@@ -81,7 +86,7 @@ import { sum } from "@utils/sum";
         "options": {
           /* ... */
           "transformers": [
-            { 
+            {
               "name": "typescript-transform-paths/nx-transformer",
               "options": { "afterDeclarations": true }
             }
@@ -93,6 +98,7 @@ import { sum } from "@utils/sum";
   ```
 
 ## Virtual Directories
+
 TS allows defining
 [virtual directories](https://www.typescriptlang.org/docs/handbook/module-resolution.html#virtual-directories-with-rootdirs)
 via the `rootDirs` compiler option.  
@@ -101,10 +107,10 @@ To enable virtual directory mapping, use the `useRootDirs` plugin option.
 ```jsonc
 {
   "compilerOptions": {
-    "rootDirs": [ "src", "generated" ],
+    "rootDirs": ["src", "generated"],
     "baseUrl": ".",
     "paths": {
-      "#root/*": [ "./src/*", "./generated/*" ]
+      "#root/*": ["./src/*", "./generated/*"]
     },
     "plugins": [
       { "transform": "typescript-transform-paths", "useRootDirs": true },
@@ -126,13 +132,16 @@ To enable virtual directory mapping, use the `useRootDirs` plugin option.
 ```
 
 `src/file1.ts`
+
 ```ts
-import '#root/file2.ts' // resolves to './file2'
+import "#root/file2.ts"; // resolves to './file2'
 ```
+
 `src/subdir/sub-file.ts`
+
 ```ts
-import '#root/file2.ts' // resolves to '../file2'
-import '#root/file1.ts' // resolves to '../file1'
+import "#root/file2.ts"; // resolves to '../file2'
+import "#root/file1.ts"; // resolves to '../file1'
 ```
 
 ## Custom Control
@@ -140,22 +149,23 @@ import '#root/file1.ts' // resolves to '../file1'
 ### Exclusion patterns
 
 You can disable transformation for paths based on the resolved file path. The `exclude` option allows specifying glob
-patterns to match against resolved file path. 
+patterns to match against resolved file path.
 
 For an example context in which this would be useful, see [Issue #83](https://github.com/LeDDGroup/typescript-transform-paths/issues/83)
 
 Example:
+
 ```jsonc
 {
   "compilerOptions": {
     "paths": {
-      "sub-module1/*": [ "../../node_modules/sub-module1/*" ],
-      "sub-module2/*": [ "../../node_modules/sub-module2/*" ],
+      "sub-module1/*": ["../../node_modules/sub-module1/*"],
+      "sub-module2/*": ["../../node_modules/sub-module2/*"]
     },
     "plugins": [
-      { 
-        "transform": "typescript-transform-paths", 
-        "exclude": [ "**/node_modules/**" ]
+      {
+        "transform": "typescript-transform-paths",
+        "exclude": ["**/node_modules/**"]
       }
     ]
   }
@@ -164,7 +174,7 @@ Example:
 
 ```ts
 // This path will not be transformed
-import * as sm1 from 'sub-module1/index'
+import * as sm1 from "sub-module1/index";
 ```
 
 ### @transform-path tag
@@ -173,7 +183,7 @@ Use the `@transform-path` tag to explicitly specify the output path for a single
 
 ```ts
 // @transform-path https://cdnjs.cloudflare.com/ajax/libs/react/17.0.1/umd/react.production.min.js
-import react from 'react' // Output path will be the url above
+import react from "react"; // Output path will be the url above
 ```
 
 ### @no-transform-path
@@ -182,7 +192,7 @@ Use the `@no-transform-path` tag to explicitly disable transformation for a sing
 
 ```ts
 // @no-transform-path
-import 'normally-transformed' // This will remain 'normally-transformed', even though it has a different value in paths config
+import "normally-transformed"; // This will remain 'normally-transformed', even though it has a different value in paths config
 ```
 
 ## Articles

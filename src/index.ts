@@ -1,5 +1,4 @@
-import transformer from "./transformer";
-export default transformer;
+export { transformer as default } from "./transformer";
 
 export { TsTransformPathsConfig } from "./types";
 export { register } from "./register";
