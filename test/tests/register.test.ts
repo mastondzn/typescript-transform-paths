@@ -3,7 +3,7 @@ import { PluginConfig } from "ts-patch";
 import * as tsNode from "ts-node";
 import * as transformerModule from "../../src/transformer";
 import { REGISTER_INSTANCE } from "ts-node";
-import { CustomTransformers, PluginImport, Program } from "typescript";
+import ts from "typescript";
 
 /* ****************************************************************************************************************** *
  * Config
@@ -135,7 +135,7 @@ describe(`Register script`, () => {
       const transformerFactoryFn = jest.fn().mockReturnValue(fakeTransformerConfig);
       const fakeProgram: any = {};
 
-      let existingTransformers: CustomTransformers | ((p: Program) => CustomTransformers) | undefined;
+      let existingTransformers: ts.CustomTransformers | ((p: ts.Program) => ts.CustomTransformers) | undefined;
       switch (configKind) {
         case "Existing Transformer Config Factory":
           existingTransformers = transformerFactoryFn;
@@ -152,7 +152,7 @@ describe(`Register script`, () => {
         let initializeSpy: jest.SpyInstance;
         let registerResult: tsNode.RegisterOptions;
         let instanceRegistrationResult: tsNode.Service;
-        let mergedTransformers: CustomTransformers;
+        let mergedTransformers: ts.CustomTransformers;
 
         beforeAll(() => {
           mockTransformer = jest.spyOn(transformerModule, "default").mockReturnValue(fakeTransformer);
@@ -166,7 +166,7 @@ describe(`Register script`, () => {
             if (existingTransformers) res.tsNodeInstance.options.transformers = existingTransformers;
             else delete res.tsNodeInstance.options.transformers;
 
-            res.tsNodeInstance.config.options.plugins = transformers as PluginImport[];
+            res.tsNodeInstance.config.options.plugins = transformers as ts.PluginImport[];
             return res;
           });
 

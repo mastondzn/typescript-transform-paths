@@ -1,5 +1,5 @@
 import path from "path";
-import ts, { CompilerOptions } from "typescript";
+import ts from "typescript";
 import { RunMode, TsNodeState, TsTransformPathsConfig, TsTransformPathsContext, VisitorContext } from "./types";
 import { nodeVisitor } from "./visitor";
 import { createHarmonyFactory } from "./harmony";
@@ -14,7 +14,7 @@ import { TransformerExtras } from "ts-patch";
 function getTsProperties(args: Parameters<typeof transformer>) {
   let tsInstance: typeof ts;
   let fileNames: readonly string[] | undefined;
-  let compilerOptions: CompilerOptions;
+  let compilerOptions: ts.CompilerOptions;
   let runMode: RunMode;
   let tsNodeState: TsNodeState | undefined;
 

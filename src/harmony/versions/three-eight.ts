@@ -1,23 +1,7 @@
 /**
  * Changes after this point: https://github.com/microsoft/TypeScript/wiki/API-Breaking-Changes#typescript-40
  */
-import TsCurrentModule, {
-  EntityName,
-  ExportDeclaration,
-  Expression,
-  Identifier,
-  ImportClause,
-  ImportDeclaration,
-  ImportTypeAssertionContainer,
-  ImportTypeNode,
-  Modifier,
-  ModuleBody,
-  ModuleDeclaration,
-  ModuleName,
-  NamedExportBindings,
-  NamedImportBindings,
-  TypeNode,
-} from "typescript";
+import ts from "typescript";
 import * as TsThreeEightModule from "../../declarations/typescript3";
 import { TsTransformPathsContext } from "../../types";
 import { DownSampleTsTypes } from "../utils";
@@ -28,30 +12,30 @@ import { DownSampleTsTypes } from "../utils";
 
 export namespace TsThreeEight {
   export type TypeMap = [
-    [TsCurrentModule.SourceFile, TsThreeEightModule.SourceFile],
-    [TsCurrentModule.StringLiteral, TsThreeEightModule.StringLiteral],
-    [TsCurrentModule.CompilerOptions, TsThreeEightModule.CompilerOptions],
-    [TsCurrentModule.EmitResolver, TsThreeEightModule.EmitResolver],
-    [TsCurrentModule.CallExpression, TsThreeEightModule.CallExpression],
-    [TsCurrentModule.ExternalModuleReference, TsThreeEightModule.ExternalModuleReference],
-    [TsCurrentModule.LiteralTypeNode, TsThreeEightModule.LiteralTypeNode],
-    [TsCurrentModule.ExternalModuleReference, TsThreeEightModule.ExternalModuleReference],
-    [TsCurrentModule.ImportTypeNode, TsThreeEightModule.ImportTypeNode],
-    [TsCurrentModule.EntityName, TsThreeEightModule.EntityName],
-    [TsCurrentModule.TypeNode, TsThreeEightModule.TypeNode],
-    [readonly TsCurrentModule.TypeNode[], readonly TsThreeEightModule.TypeNode[]],
-    [TsCurrentModule.LiteralTypeNode, TsThreeEightModule.LiteralTypeNode],
-    [TsCurrentModule.ImportDeclaration, TsThreeEightModule.ImportDeclaration],
-    [TsCurrentModule.ImportClause, TsThreeEightModule.ImportClause],
-    [TsCurrentModule.Identifier, TsThreeEightModule.Identifier],
-    [TsCurrentModule.NamedImportBindings, TsThreeEightModule.NamedImportBindings],
-    [TsCurrentModule.ImportDeclaration, TsThreeEightModule.ImportDeclaration],
-    [TsCurrentModule.ExportDeclaration, TsThreeEightModule.ExportDeclaration],
-    [TsCurrentModule.ModuleDeclaration, TsThreeEightModule.ModuleDeclaration],
-    [TsCurrentModule.Expression, TsThreeEightModule.Expression],
-    [TsCurrentModule.ModuleBody, TsThreeEightModule.ModuleBody],
-    [TsCurrentModule.ModuleName, TsThreeEightModule.ModuleName],
-    [TsCurrentModule.ExportDeclaration["exportClause"], TsThreeEightModule.ExportDeclaration["exportClause"]]
+    [ts.SourceFile, TsThreeEightModule.SourceFile],
+    [ts.StringLiteral, TsThreeEightModule.StringLiteral],
+    [ts.CompilerOptions, TsThreeEightModule.CompilerOptions],
+    [ts.EmitResolver, TsThreeEightModule.EmitResolver],
+    [ts.CallExpression, TsThreeEightModule.CallExpression],
+    [ts.ExternalModuleReference, TsThreeEightModule.ExternalModuleReference],
+    [ts.LiteralTypeNode, TsThreeEightModule.LiteralTypeNode],
+    [ts.ExternalModuleReference, TsThreeEightModule.ExternalModuleReference],
+    [ts.ImportTypeNode, TsThreeEightModule.ImportTypeNode],
+    [ts.EntityName, TsThreeEightModule.EntityName],
+    [ts.TypeNode, TsThreeEightModule.TypeNode],
+    [readonly ts.TypeNode[], readonly TsThreeEightModule.TypeNode[]],
+    [ts.LiteralTypeNode, TsThreeEightModule.LiteralTypeNode],
+    [ts.ImportDeclaration, TsThreeEightModule.ImportDeclaration],
+    [ts.ImportClause, TsThreeEightModule.ImportClause],
+    [ts.Identifier, TsThreeEightModule.Identifier],
+    [ts.NamedImportBindings, TsThreeEightModule.NamedImportBindings],
+    [ts.ImportDeclaration, TsThreeEightModule.ImportDeclaration],
+    [ts.ExportDeclaration, TsThreeEightModule.ExportDeclaration],
+    [ts.ModuleDeclaration, TsThreeEightModule.ModuleDeclaration],
+    [ts.Expression, TsThreeEightModule.Expression],
+    [ts.ModuleBody, TsThreeEightModule.ModuleBody],
+    [ts.ModuleName, TsThreeEightModule.ModuleName],
+    [ts.ExportDeclaration["exportClause"], TsThreeEightModule.ExportDeclaration["exportClause"]]
   ];
 }
 
@@ -72,19 +56,19 @@ export namespace TsThreeEight {
         return (...args: any) => ts.updateCall.apply(void 0, args);
       case "updateImportClause":
         return function (
-          node: ImportClause,
+          node: ts.ImportClause,
           isTypeOnly: boolean,
-          name: Identifier | undefined,
-          namedBindings: NamedImportBindings | undefined
+          name: ts.Identifier | undefined,
+          namedBindings: ts.NamedImportBindings | undefined
         ) {
           return ts.updateImportClause.apply(void 0, downSample(node, name, namedBindings));
         };
       case "updateImportDeclaration":
         return function (
-          node: ImportDeclaration,
-          modifiers: readonly Modifier[] | undefined,
-          importClause: ImportClause | undefined,
-          moduleSpecifier: Expression
+          node: ts.ImportDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
+          importClause: ts.ImportClause | undefined,
+          moduleSpecifier: ts.Expression
         ) {
           const [dsNode, dsImportClause, dsModuleSpecifier] = downSample(node, importClause, moduleSpecifier);
 
@@ -98,11 +82,11 @@ export namespace TsThreeEight {
         };
       case "updateExportDeclaration":
         return function (
-          node: ExportDeclaration,
-          modifiers: readonly Modifier[] | undefined,
+          node: ts.ExportDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
           isTypeOnly: boolean,
-          exportClause: NamedExportBindings | undefined,
-          moduleSpecifier: Expression | undefined
+          exportClause: ts.NamedExportBindings | undefined,
+          moduleSpecifier: ts.Expression | undefined
         ) {
           const [dsNode, dsModuleSpecifier, dsExportClause] = downSample(node, moduleSpecifier, exportClause);
           return ts.updateExportDeclaration(
@@ -117,10 +101,10 @@ export namespace TsThreeEight {
         };
       case "updateModuleDeclaration":
         return function (
-          node: ModuleDeclaration,
-          modifiers: readonly Modifier[] | undefined,
-          name: ModuleName,
-          body: ModuleBody | undefined
+          node: ts.ModuleDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
+          name: ts.ModuleName,
+          body: ts.ModuleBody | undefined
         ) {
           const [dsNode, dsName, dsBody] = downSample(node, name, body);
 
@@ -128,11 +112,11 @@ export namespace TsThreeEight {
         };
       case "updateImportTypeNode":
         return function (
-          node: ImportTypeNode,
-          argument: TypeNode,
-          assertions: ImportTypeAssertionContainer | undefined,
-          qualifier: EntityName | undefined,
-          typeArguments: readonly TypeNode[] | undefined,
+          node: ts.ImportTypeNode,
+          argument: ts.TypeNode,
+          assertions: ts.ImportTypeAssertionContainer | undefined,
+          qualifier: ts.EntityName | undefined,
+          typeArguments: readonly ts.TypeNode[] | undefined,
           isTypeOf?: boolean
         ) {
           const [dsNode, dsArgument, dsQualifier, dsTypeArguments] = downSample(

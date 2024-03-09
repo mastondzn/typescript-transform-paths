@@ -1,4 +1,4 @@
-import TS from "typescript";
+import ts from "typescript";
 import { TsTransformPathsContext } from "../types";
 import { TsFourSeven, TsThreeEight } from "./versions";
 
@@ -6,7 +6,7 @@ import { TsFourSeven, TsThreeEight } from "./versions";
 // region: Types
 /* ****************************************************************************************************************** */
 
-export interface HarmonyFactory extends TS.NodeFactory {}
+export interface HarmonyFactory extends ts.NodeFactory {}
 
 // endregion
 

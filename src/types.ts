@@ -1,4 +1,4 @@
-import ts, { CompilerOptions, EmitHost, Pattern, SourceFile } from "typescript";
+import ts from "typescript";
 import { PluginConfig } from "ts-patch";
 import { HarmonyFactory } from "./harmony";
 import { IMinimatch } from "minimatch";
@@ -39,14 +39,14 @@ export interface TsTransformPathsContext {
   readonly tsNodeState?: TsNodeState;
   readonly program?: ts.Program;
   readonly config: TsTransformPathsConfig;
-  readonly compilerOptions: CompilerOptions;
+  readonly compilerOptions: ts.CompilerOptions;
   readonly elisionMap: Map<ts.SourceFile, Map<ImportOrExportDeclaration, ImportOrExportDeclaration>>;
   readonly transformationContext: ts.TransformationContext;
   readonly rootDirs?: string[];
   readonly excludeMatchers: IMinimatch[] | undefined;
-  readonly outputFileNamesCache: Map<SourceFile, string>;
-  readonly pathsPatterns: readonly (string | Pattern)[] | undefined;
-  readonly emitHost: EmitHost;
+  readonly outputFileNamesCache: Map<ts.SourceFile, string>;
+  readonly pathsPatterns: readonly (string | ts.Pattern)[] | undefined;
+  readonly emitHost: ts.EmitHost;
 }
 
 export interface VisitorContext extends TsTransformPathsContext {

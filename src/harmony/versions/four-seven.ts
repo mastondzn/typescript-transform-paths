@@ -1,18 +1,7 @@
 /**
  * Changes after this point: https://github.com/microsoft/TypeScript/wiki/API-Breaking-Changes#typescript-48
  */
-import TsCurrentModule, {
-  AssertClause,
-  ExportDeclaration,
-  Expression,
-  ImportClause,
-  ImportDeclaration,
-  Modifier,
-  ModuleBody,
-  ModuleDeclaration,
-  ModuleName,
-  NamedExportBindings,
-} from "typescript";
+import ts from "typescript";
 import TsFourSevenModule from "../../declarations/typescript4.7";
 import { TsTransformPathsContext } from "../../types";
 import { DownSampleTsTypes } from "../utils";
@@ -23,16 +12,16 @@ import { DownSampleTsTypes } from "../utils";
 
 export namespace TsFourSeven {
   export type TypeMap = [
-    [TsCurrentModule.ImportDeclaration, TsFourSevenModule.ImportDeclaration],
-    [TsCurrentModule.Modifier, TsFourSevenModule.Modifier],
-    [TsCurrentModule.ImportClause, TsFourSevenModule.ImportClause],
-    [TsCurrentModule.Expression, TsFourSevenModule.Expression],
-    [TsCurrentModule.AssertClause, TsFourSevenModule.AssertClause],
-    [TsCurrentModule.ExportDeclaration, TsFourSevenModule.ExportDeclaration],
-    [TsCurrentModule.NamedExportBindings, TsFourSevenModule.NamedExportBindings],
-    [TsCurrentModule.ModuleDeclaration, TsFourSevenModule.ModuleDeclaration],
-    [TsCurrentModule.ModuleName, TsFourSevenModule.ModuleName],
-    [TsCurrentModule.ModuleBody, TsFourSevenModule.ModuleBody]
+    [ts.ImportDeclaration, TsFourSevenModule.ImportDeclaration],
+    [ts.Modifier, TsFourSevenModule.Modifier],
+    [ts.ImportClause, TsFourSevenModule.ImportClause],
+    [ts.Expression, TsFourSevenModule.Expression],
+    [ts.AssertClause, TsFourSevenModule.AssertClause],
+    [ts.ExportDeclaration, TsFourSevenModule.ExportDeclaration],
+    [ts.NamedExportBindings, TsFourSevenModule.NamedExportBindings],
+    [ts.ModuleDeclaration, TsFourSevenModule.ModuleDeclaration],
+    [ts.ModuleName, TsFourSevenModule.ModuleName],
+    [ts.ModuleBody, TsFourSevenModule.ModuleBody]
   ];
 }
 
@@ -52,11 +41,11 @@ export namespace TsFourSeven {
     switch (prop) {
       case "updateImportDeclaration":
         return function (
-          node: ImportDeclaration,
-          modifiers: readonly Modifier[] | undefined,
-          importClause: ImportClause | undefined,
-          moduleSpecifier: Expression,
-          assertClause: AssertClause | undefined
+          node: ts.ImportDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
+          importClause: ts.ImportClause | undefined,
+          moduleSpecifier: ts.Expression,
+          assertClause: ts.AssertClause | undefined
         ) {
           const [dsNode, dsImportClause, dsModuleSpecifier, dsAssertClause] = downSample(
             node,
@@ -76,12 +65,12 @@ export namespace TsFourSeven {
         };
       case "updateExportDeclaration":
         return function (
-          node: ExportDeclaration,
-          modifiers: readonly Modifier[] | undefined,
+          node: ts.ExportDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
           isTypeOnly: boolean,
-          exportClause: NamedExportBindings | undefined,
-          moduleSpecifier: Expression | undefined,
-          assertClause: AssertClause | undefined
+          exportClause: ts.NamedExportBindings | undefined,
+          moduleSpecifier: ts.Expression | undefined,
+          assertClause: ts.AssertClause | undefined
         ) {
           const [dsNode, dsExportClause, dsModuleSpecifier, dsAssertClause] = downSample(
             node,
@@ -102,10 +91,10 @@ export namespace TsFourSeven {
         };
       case "updateModuleDeclaration":
         return function (
-          node: ModuleDeclaration,
-          modifiers: readonly Modifier[] | undefined,
-          name: ModuleName,
-          body: ModuleBody | undefined
+          node: ts.ModuleDeclaration,
+          modifiers: readonly ts.Modifier[] | undefined,
+          name: ts.ModuleName,
+          body: ts.ModuleBody | undefined
         ) {
           const [dsNode, dsName, dsBody] = downSample(node, name, body);
 

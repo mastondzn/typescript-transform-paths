@@ -1,7 +1,7 @@
 import { VisitorContext } from "../types";
 import { isBaseDir, isURL, maybeAddRelativeLocalPrefix } from "./general-utils";
 import * as path from "path";
-import { removeFileExtension, removeSuffix, ResolvedModuleFull, SourceFile } from "typescript";
+import ts from "typescript";
 import { getOutputDirForSourceFile } from "./ts-helpers";
 import { getRelativePath } from "./get-relative-path";
 
@@ -37,19 +37,19 @@ enum IndexType {
 // region: Helpers
 /* ****************************************************************************************************************** */
 
-function getPathDetail(moduleName: string, resolvedModule: ResolvedModuleFull) {
+function getPathDetail(moduleName: string, resolvedModule: ts.ResolvedModuleFull) {
   let resolvedFileName = resolvedModule.originalPath ?? resolvedModule.resolvedFileName;
   const implicitPackageIndex = resolvedModule.packageId?.subModuleName;
 
   const resolvedDir = implicitPackageIndex
-    ? removeSuffix(resolvedFileName, `/${implicitPackageIndex}`)
+    ? ts.removeSuffix(resolvedFileName, `/${implicitPackageIndex}`)
     : path.dirname(resolvedFileName);
   const resolvedBaseName = implicitPackageIndex ? void 0 : path.basename(resolvedFileName);
-  const resolvedBaseNameNoExtension = resolvedBaseName && removeFileExtension(resolvedBaseName);
+  const resolvedBaseNameNoExtension = resolvedBaseName && ts.removeFileExtension(resolvedBaseName);
   const resolvedExtName = resolvedBaseName && path.extname(resolvedFileName);
 
   let baseName = !implicitPackageIndex ? path.basename(moduleName) : void 0;
-  let baseNameNoExtension = baseName && removeFileExtension(baseName);
+  let baseNameNoExtension = baseName && ts.removeFileExtension(baseName);
   let extName = baseName && path.extname(moduleName);
 
   // Account for possible false extensions. Example scenario:
@@ -88,18 +88,18 @@ function getPathDetail(moduleName: string, resolvedModule: ResolvedModuleFull) {
   };
 }
 
-function getResolvedSourceFile(context: VisitorContext, fileName: string): SourceFile {
-  let res: SourceFile | undefined;
+function getResolvedSourceFile(context: VisitorContext, fileName: string): ts.SourceFile {
+  let res: ts.SourceFile | undefined;
   const { program, tsInstance } = context;
 
   if (program) {
     /* Attempt to directly pull from Program */
-    res = program.getSourceFile(fileName) as SourceFile;
+    res = program.getSourceFile(fileName) as ts.SourceFile;
     if (res) return res;
 
     /* Attempt to find without extension */
-    res = (program.getSourceFiles() as SourceFile[]).find(
-      (s) => removeFileExtension(s.fileName) === removeFileExtension(fileName)
+    res = (program.getSourceFiles() as ts.SourceFile[]).find(
+      (s) => ts.removeFileExtension(s.fileName) === ts.removeFileExtension(fileName)
     );
     if (res) return res;
   }

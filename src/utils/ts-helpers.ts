@@ -1,4 +1,4 @@
-import ts, { GetCanonicalFileName, SourceFile } from "typescript";
+import ts from "typescript";
 import path from "path";
 import { VisitorContext } from "../types";
 import type { REGISTER_INSTANCE } from "ts-node";
@@ -10,7 +10,7 @@ import type { REGISTER_INSTANCE } from "ts-node";
 /**
  * Determine output file path for source file
  */
-export function getOutputDirForSourceFile(context: VisitorContext, sourceFile: SourceFile): string {
+export function getOutputDirForSourceFile(context: VisitorContext, sourceFile: ts.SourceFile): string {
   const {
     tsInstance,
     emitHost,
@@ -62,7 +62,7 @@ export function isModulePathsMatch(context: VisitorContext, moduleName: string):
 export function createSyntheticEmitHost(
   compilerOptions: ts.CompilerOptions,
   tsInstance: typeof ts,
-  getCanonicalFileName: GetCanonicalFileName,
+  getCanonicalFileName: ts.GetCanonicalFileName,
   fileNames: string[]
 ) {
   return {

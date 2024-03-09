@@ -37,23 +37,7 @@
  * export { A } from './b'
  */
 import { ImportOrExportDeclaration, VisitorContext } from "../types";
-import {
-  Debug,
-  EmitResolver,
-  ExportSpecifier,
-  ImportClause,
-  ImportsNotUsedAsValues,
-  ImportSpecifier,
-  isInJSFile,
-  NamedExportBindings,
-  NamedExports,
-  NamedImportBindings,
-  NamespaceExport,
-  Node,
-  StringLiteral,
-  Visitor,
-  VisitResult,
-} from "typescript";
+import ts from "typescript";
 
 /* ****************************************************************************************************************** */
 // region: Utilities
@@ -68,15 +52,15 @@ import {
 export function elideImportOrExportDeclaration<T extends ImportOrExportDeclaration>(
   context: VisitorContext,
   node: T,
-  newModuleSpecifier: StringLiteral,
-  resolver: EmitResolver
+  newModuleSpecifier: ts.StringLiteral,
+  resolver: ts.EmitResolver
 ): T | undefined;
 
 export function elideImportOrExportDeclaration(
   context: VisitorContext,
   node: ImportOrExportDeclaration,
-  newModuleSpecifier: StringLiteral,
-  resolver: EmitResolver
+  newModuleSpecifier: ts.StringLiteral,
+  resolver: ts.EmitResolver
 ): ImportOrExportDeclaration | undefined {
   const { tsInstance, factory } = context;
   const { compilerOptions } = context;
@@ -94,7 +78,9 @@ export function elideImportOrExportDeclaration(
     isExportSpecifier,
   } = tsInstance;
 
-  const isNamespaceExport = tsInstance.isNamespaceExport ?? ((node: Node): node is NamespaceExport => node.kind === SyntaxKind.NamespaceExport);
+  const isNamespaceExport =
+    tsInstance.isNamespaceExport ??
+    ((node: ts.Node): node is ts.NamespaceExport => node.kind === SyntaxKind.NamespaceExport);
 
   if (tsInstance.isImportDeclaration(node)) {
     // Do not elide a side-effect only import declaration.
@@ -104,12 +90,12 @@ export function elideImportOrExportDeclaration(
     // Always elide type-only imports
     if (node.importClause.isTypeOnly) return undefined;
 
-    const importClause = visitNode(node.importClause, <Visitor>visitImportClause);
+    const importClause = visitNode(node.importClause, <ts.Visitor>visitImportClause);
 
     if (
       importClause ||
-      compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Preserve ||
-      compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Error
+      compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Preserve ||
+      compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Error
     )
       return factory.updateImportDeclaration(
         node,
@@ -133,12 +119,12 @@ export function elideImportOrExportDeclaration(
     const allowEmpty =
       !!compilerOptions.verbatimModuleSyntax ||
       (!!node.moduleSpecifier &&
-        (compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Preserve ||
-          compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Error));
+        (compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Preserve ||
+          compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Error));
 
     const exportClause = visitNode(
       node.exportClause,
-      <Visitor>((bindings: NamedExportBindings) => visitNamedExportBindings(bindings, allowEmpty)),
+      <ts.Visitor>((bindings: ts.NamedExportBindings) => visitNamedExportBindings(bindings, allowEmpty)),
       isNamedExportBindings
     );
 
@@ -166,7 +152,7 @@ export function elideImportOrExportDeclaration(
    *
    * @param node The import clause node.
    */
-  function visitImportClause(node: ImportClause): VisitResult<ImportClause> {
+  function visitImportClause(node: ts.ImportClause): ts.VisitResult<ts.ImportClause> {
     // Elide the import clause if we elide both its name and its named bindings.
     const name = shouldEmitAliasDeclaration(node) ? node.name : undefined;
     const namedBindings = visitNode(node.namedBindings, <Visitor>visitNamedImportBindings, isNamedImportBindings);
@@ -180,7 +166,7 @@ export function elideImportOrExportDeclaration(
    *
    * @param node The named import bindings node.
    */
-  function visitNamedImportBindings(node: NamedImportBindings): VisitResult<NamedImportBindings> {
+  function visitNamedImportBindings(node: ts.NamedImportBindings): ts.VisitResult<ts.NamedImportBindings> {
     if (node.kind === SyntaxKind.NamespaceImport) {
       // Elide a namespace import if it is not referenced.
       return shouldEmitAliasDeclaration(node) ? node : undefined;
@@ -189,10 +175,10 @@ export function elideImportOrExportDeclaration(
       const allowEmpty =
         compilerOptions.verbatimModuleSyntax ||
         (compilerOptions.preserveValueImports &&
-          (compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Preserve ||
-            compilerOptions.importsNotUsedAsValues === ImportsNotUsedAsValues.Error));
+          (compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Preserve ||
+            compilerOptions.importsNotUsedAsValues === ts.ImportsNotUsedAsValues.Error));
 
-      const elements = visitNodes(node.elements, <Visitor>visitImportSpecifier, isImportSpecifier);
+      const elements = visitNodes(node.elements, <ts.Visitor>visitImportSpecifier, isImportSpecifier);
       return allowEmpty || tsInstance.some(elements) ? factory.updateNamedImports(node, elements) : undefined;
     }
   }
@@ -202,7 +188,7 @@ export function elideImportOrExportDeclaration(
    *
    * @param node The import specifier node.
    */
-  function visitImportSpecifier(node: ImportSpecifier): VisitResult<ImportSpecifier> {
+  function visitImportSpecifier(node: ts.ImportSpecifier): ts.VisitResult<ts.ImportSpecifier> {
     // Elide an import specifier if it is not referenced.
     return !node.isTypeOnly && shouldEmitAliasDeclaration(node) ? node : undefined;
   }
@@ -211,23 +197,23 @@ export function elideImportOrExportDeclaration(
    * Visits named exports, eliding it if it does not contain an export specifier that
    * resolves to a value.
    */
-  function visitNamedExports(node: NamedExports, allowEmpty: boolean): VisitResult<NamedExports> | undefined {
+  function visitNamedExports(node: ts.NamedExports, allowEmpty: boolean): ts.VisitResult<ts.NamedExports> | undefined {
     // Elide the named exports if all of its export specifiers were elided.
-    const elements = visitNodes(node.elements, <Visitor>visitExportSpecifier, isExportSpecifier);
+    const elements = visitNodes(node.elements, <ts.Visitor>visitExportSpecifier, isExportSpecifier);
     return allowEmpty || tsInstance.some(elements) ? factory.updateNamedExports(node, elements) : undefined;
   }
 
   function visitNamedExportBindings(
-    node: NamedExportBindings,
+    node: ts.NamedExportBindings,
     allowEmpty: boolean
-  ): VisitResult<NamedExportBindings> | undefined {
+  ): ts.VisitResult<ts.NamedExportBindings> | undefined {
     return isNamespaceExport(node) ? visitNamespaceExports(node) : visitNamedExports(node, allowEmpty);
   }
 
-  function visitNamespaceExports(node: NamespaceExport): VisitResult<NamespaceExport> {
+  function visitNamespaceExports(node: ts.NamespaceExport): ts.VisitResult<ts.NamespaceExport> {
     // Note: This may not work entirely properly, more likely it's just extraneous, but this won't matter soon,
     // as we'll be removing elision entirely
-    return factory.updateNamespaceExport(node, Debug.checkDefined(visitNode(node.name, (n) => n, isIdentifier)));
+    return factory.updateNamespaceExport(node, ts.Debug.checkDefined(visitNode(node.name, (n) => n, isIdentifier)));
   }
 
   /**
@@ -235,17 +221,17 @@ export function elideImportOrExportDeclaration(
    *
    * @param node The export specifier node.
    */
-  function visitExportSpecifier(node: ExportSpecifier): VisitResult<ExportSpecifier> {
+  function visitExportSpecifier(node: ts.ExportSpecifier): ts.VisitResult<ts.ExportSpecifier> {
     // Elide an export specifier if it does not reference a value.
     return !node.isTypeOnly && (compilerOptions.verbatimModuleSyntax || resolver.isValueAliasDeclaration(node))
       ? node
       : undefined;
   }
 
-  function shouldEmitAliasDeclaration(node: Node): boolean {
+  function shouldEmitAliasDeclaration(node: ts.Node): boolean {
     return (
       !!compilerOptions.verbatimModuleSyntax ||
-      isInJSFile(node) ||
+      ts.isInJSFile(node) ||
       (compilerOptions.preserveValueImports
         ? resolver.isValueAliasDeclaration(node)
         : resolver.isReferencedAliasDeclaration(node))
